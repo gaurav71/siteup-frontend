@@ -3,7 +3,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@ap
 import { config } from '../../config/config';
 
 const link = createHttpLink({
-  uri: config.backend_url,
+  uri: `${config.backendBaseUrl}graphql`,
   credentials: 'include'
 })
 
