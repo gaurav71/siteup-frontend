@@ -1,8 +1,9 @@
 import React from 'react';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import { config } from '../../config/config';
 
 const link = createHttpLink({
-  uri: 'http://localhost:9000/graphql',
+  uri: config.backend_url,
   credentials: 'include'
 })
 

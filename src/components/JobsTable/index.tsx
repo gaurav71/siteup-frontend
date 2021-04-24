@@ -5,7 +5,7 @@ import { Table } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import { SiteUpCheckerJob } from '../../generated/graphql'
 import { useDashboardContext } from '../Dashboard'
-import CheckStatusButton from './checkStatusButton'
+import CheckStatusButton from './CheckStatusButton'
 import DeleteJobButton from './DeleteJobButton'
 import { DownIcon, UpIcon, Wrapper } from './styled'
 
@@ -14,10 +14,10 @@ interface JobsTableProps {}
 const JobsTable: React.FC<JobsTableProps> = () => {
   const { jobsData, getJobsLoader, updateSelectedJob, setAddEditJobModal } = useDashboardContext()
 
-  const handleEditButtonClick = (jobId: string) => useCallback(() => {
+  const handleEditButtonClick = (jobId: string) => {
     updateSelectedJob(jobsData.find((job) => job._id === jobId))
     setAddEditJobModal('edit')
-  }, [])
+  }
   
   const renderMapper = {
     siteUpOnLastChecked: (siteUpOnLastChecked: Maybe<boolean>) => {
