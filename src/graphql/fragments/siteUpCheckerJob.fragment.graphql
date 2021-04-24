@@ -1,0 +1,17 @@
+fragment SiteUpCheckerJobFragment on SiteUpCheckerJob {
+  _id
+  userId
+  url
+  cron
+  status
+  downCounterBeforeReset
+  resetAfterDownCount
+  totalDownCounter
+  lastCheckedOn
+  siteUpOnLastChecked
+  lastFailureOn
+  lastFailureEmailSentOn
+  lastUpdatedOn
+  createdOn
+  sendMailOnFailure
+}

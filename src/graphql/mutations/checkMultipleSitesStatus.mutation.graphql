@@ -1,0 +1,5 @@
+mutation checkMultipleSitesStatus($jobIds: [String!]!){
+  checkMultipleSitesStatus(jobIds: $jobIds) {
+    ...SiteUpCheckerJobFragment
+  }
+}

@@ -1,0 +1,3 @@
+mutation removeSiteUpCheckerJob($jobId: String!) {
+  removeSiteUpCheckerJob(jobId: $jobId)
+}

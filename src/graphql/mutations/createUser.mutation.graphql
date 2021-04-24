@@ -1,0 +1,15 @@
+mutation createUser(
+  $userName: String!
+  $email: String!
+  $password: String!
+  $sendMailOnFailure: Boolean!
+){
+  createUser(input: {
+    userName: $userName
+    email: $email
+    password: $password
+    sendMailOnFailure: $sendMailOnFailure
+  }) {
+    ...UserFragment
+  }
+}

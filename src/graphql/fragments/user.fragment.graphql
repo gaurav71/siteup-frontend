@@ -1,0 +1,7 @@
+fragment UserFragment on User {
+  _id
+  userName
+  email
+  userType
+  sendMailOnFailure
+}

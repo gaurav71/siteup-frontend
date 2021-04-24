@@ -1,0 +1,5 @@
+mutation startSiteUpCheckerJob($jobId: String!) {
+  startSiteUpCheckerJob(jobId: $jobId) {
+    ...SiteUpCheckerJobFragment
+  }
+}

@@ -1,0 +1,15 @@
+mutation createSiteUpCheckerJob(
+  $url: String!
+  $cron: String!
+  $resetAfterDownCount: Float!
+  $sendMailOnFailure: Boolean!
+) {
+  createSiteUpCheckerJob(input: {
+    url: $url
+    cron: $cron
+    resetAfterDownCount: $resetAfterDownCount
+    sendMailOnFailure: $sendMailOnFailure
+  }) {
+    ...SiteUpCheckerJobFragment
+  }
+}
