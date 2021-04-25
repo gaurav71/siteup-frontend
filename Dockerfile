@@ -8,13 +8,11 @@ COPY tsconfig.json ./
 
 COPY webpack.config.js ./
 
-COPY yarn.lock ./
-
-RUN yarn install
+RUN npm install
 
 COPY src ./src
 
-RUN yarn build
+RUN npm run build
 
 FROM nginx
 
