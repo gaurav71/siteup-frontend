@@ -4,13 +4,23 @@ import cronstrue from 'cronstrue';
 import { Maybe } from 'graphql/jsutils/Maybe'
 import { Badge, Table } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
-import { SiteUpCheckerJob, useSiteUpCheckerJobUpdatedSubscription } from '../../generated/graphql'
+import { SiteUpCheckerJob } from '../../generated/graphql'
 import { useDashboardContext } from '../Dashboard'
 import CheckStatusButton from './CheckStatusButton'
 import DeleteJobButton from './DeleteJobButton'
-import { DownIcon, UpIcon, Wrapper } from './styled'
+import { Wrapper } from './styled'
 
 interface JobsTableProps {}
+
+const rowSelection = {
+  onChange: (selectedRowKeys: React.Key[], selectedRows: SiteUpCheckerJob[]) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
+  },
+  getCheckboxProps: (record: SiteUpCheckerJob) => ({
+    disabled: false,
+    _id: record._id,
+  }),
+}
 
 const JobsTable: React.FC<JobsTableProps> = () => {
   const { jobsData, getJobsLoader, updateSelectedJob, setAddEditJobModal } = useDashboardContext()
@@ -90,17 +100,7 @@ const JobsTable: React.FC<JobsTableProps> = () => {
       key: 'delete',
       render: renderMapper["delete"]
     }
-  ];
-
-  const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: SiteUpCheckerJob[]) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-    },
-    getCheckboxProps: (record: SiteUpCheckerJob) => ({
-      disabled: false,
-      _id: record._id,
-    }),
-  };
+  ]
   
   return (
     <Wrapper>

@@ -3,6 +3,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, split } fr
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { config } from '../../config/config';
 import { getMainDefinition } from '@apollo/client/utilities';
+import { cacheUpdator } from './cacheUpdator';
 
 const httpLink = createHttpLink({
   uri: `${config.backendBaseUrl}graphql/`,
@@ -28,7 +29,7 @@ const splitLink = split(
   httpLink,
 )
 
-export const client = new ApolloClient({
+const client = new ApolloClient({
   link: splitLink,
   cache: new InMemoryCache()
 })
@@ -40,3 +41,8 @@ const Provider: React.FC = ({ children }) => (
 )
 
 export default Provider
+
+export {
+  client,
+  cacheUpdator
+}
