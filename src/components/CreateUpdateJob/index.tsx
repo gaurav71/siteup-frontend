@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
-import { Modal, Form, Input, InputNumber, Switch, Button } from 'antd'
+import React, { useEffect, CSSProperties, useState } from 'react'
+import { Modal, Form, Input, InputNumber, Switch, Button, Row, Col } from 'antd'
 import { GetUserSiteUpCheckerJobsDocument, SiteUpCheckerJob, useCreateSiteUpCheckerJobMutation, useUpdateSiteUpCheckerJobMutation } from '../../generated/graphql'
 import { client } from '../Apollo'
 import { useDashboardContext } from '../Dashboard'
+import CronInput from './cronInput'
 
 interface CreateUpdateJobProps {}
 
@@ -67,23 +68,25 @@ const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
   const handleSubmit = () => {
     const formData: FormData = form.getFieldsValue()
 
-    switch(addEditJobModal) {
-      case 'add': {
-        createMutation({
-          variables: formData
-        })
-      }
-      case 'edit': {
-        if (selectedJob) {
-          updateMutation({
-            variables: {
-              jobId: selectedJob._id,
-              ...formData
-            }
-          })
-        }
-      }
-    }
+    console.log(formData)
+
+    // switch(addEditJobModal) {
+    //   case 'add': {
+    //     createMutation({
+    //       variables: formData
+    //     })
+    //   }
+    //   case 'edit': {
+    //     if (selectedJob) {
+    //       updateMutation({
+    //         variables: {
+    //           jobId: selectedJob._id,
+    //           ...formData
+    //         }
+    //       })
+    //     }
+    //   }
+    // }
   }
 
   const handleCancel = () => {
@@ -92,6 +95,8 @@ const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
   }
 
   const loader = createLoader || updateLoader
+
+  const [cronValue, setCronValue] = useState('123123')
 
   return (
     <Modal
@@ -136,8 +141,9 @@ const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
           label="Cron"
           name="cron"
           rules={[{ required: true }]}
+          valuePropName='cronValue'
         >
-          <Input />
+          <CronInput cronValue={cronValue}/>
         </Form.Item>
         <Form.Item
           label="Reset After"

@@ -1,0 +1,5 @@
+subscription siteUpCheckerJobUpdated($userId: String!) {
+  siteUpCheckerJobUpdated(userId: $userId) {
+    ...SiteUpCheckerJobFragment
+  }
+}

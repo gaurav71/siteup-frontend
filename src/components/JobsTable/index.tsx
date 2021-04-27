@@ -1,9 +1,10 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import moment from 'moment'
+import cronstrue from 'cronstrue';
 import { Maybe } from 'graphql/jsutils/Maybe'
-import { Table } from 'antd'
+import { Badge, Table } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
-import { SiteUpCheckerJob } from '../../generated/graphql'
+import { SiteUpCheckerJob, useSiteUpCheckerJobUpdatedSubscription } from '../../generated/graphql'
 import { useDashboardContext } from '../Dashboard'
 import CheckStatusButton from './CheckStatusButton'
 import DeleteJobButton from './DeleteJobButton'
@@ -13,21 +14,22 @@ interface JobsTableProps {}
 
 const JobsTable: React.FC<JobsTableProps> = () => {
   const { jobsData, getJobsLoader, updateSelectedJob, setAddEditJobModal } = useDashboardContext()
-
+  
   const handleEditButtonClick = (jobId: string) => {
     updateSelectedJob(jobsData.find((job) => job._id === jobId))
     setAddEditJobModal('edit')
   }
   
   const renderMapper = {
+    cron: (cron: string) => cronstrue.toString(cron),
     siteUpOnLastChecked: (siteUpOnLastChecked: Maybe<boolean>) => {
       if (typeof siteUpOnLastChecked !== 'boolean') {
         return '-'
       }
 
       switch(siteUpOnLastChecked) {
-        case true: return <UpIcon className="fas fa-check-circle" />
-        case false: return <DownIcon className="fas fa-times-circle" />
+        case true: return <><Badge status='success' />Active</>
+        case false: return <><Badge status='error' />Down</>
       }
     },
     lastCheckedOn: (lastCheckedOn: Maybe<number>) => {
@@ -53,9 +55,10 @@ const JobsTable: React.FC<JobsTableProps> = () => {
       key: 'url',
     },
     {
-      title: 'Cron',
+      title: 'Check',
       dataIndex: 'cron',
       key: 'cron',
+      render: renderMapper["cron"]
     },
     {
       title: 'Status',
@@ -76,7 +79,7 @@ const JobsTable: React.FC<JobsTableProps> = () => {
       render: renderMapper["edit"]
     },
     {
-      title: 'Check now',
+      title: 'Action',
       dataIndex: '_id',
       key: 'checkNow',
       render: renderMapper["checkNow"]
@@ -88,13 +91,27 @@ const JobsTable: React.FC<JobsTableProps> = () => {
       render: renderMapper["delete"]
     }
   ];
+
+  const rowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: SiteUpCheckerJob[]) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    getCheckboxProps: (record: SiteUpCheckerJob) => ({
+      disabled: false,
+      _id: record._id,
+    }),
+  };
   
   return (
     <Wrapper>
       <Table<SiteUpCheckerJob>
         loading={getJobsLoader}
         pagination={false}
-        dataSource={jobsData}
+        dataSource={jobsData.map((job) => ({ ...job, key: job._id }))}
+        rowSelection={{
+          type: 'checkbox',
+          ...rowSelection,
+        }}
       >
         {columns.map((col) => (
           <Table.Column<SiteUpCheckerJob>

@@ -17,6 +17,14 @@ export type Scalars = {
 };
 
 
+export type AuditLog = {
+  __typename?: 'AuditLog';
+  userId: Scalars['String'];
+  jobId: Scalars['String'];
+  status: Scalars['Boolean'];
+  createdOn: Scalars['Float'];
+};
+
 export enum CacheControlScope {
   Public = 'PUBLIC',
   Private = 'PRIVATE'
@@ -97,6 +105,8 @@ export type Query = {
   login: User;
   getSiteUpCheckerJobById: SiteUpCheckerJob;
   getUserSiteUpCheckerJobs: Array<SiteUpCheckerJob>;
+  getSiteAuditLogs: AuditLog;
+  getSiteFailureAuditLogs: AuditLog;
 };
 
 
@@ -107,6 +117,16 @@ export type QueryLoginArgs = {
 
 export type QueryGetSiteUpCheckerJobByIdArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryGetSiteAuditLogsArgs = {
+  jobId: Scalars['String'];
+};
+
+
+export type QueryGetSiteFailureAuditLogsArgs = {
+  jobId: Scalars['String'];
 };
 
 export type SiteUpCheckerJob = {
@@ -126,6 +146,17 @@ export type SiteUpCheckerJob = {
   lastFailureEmailSentOn?: Maybe<Scalars['Float']>;
   createdOn: Scalars['Float'];
   lastUpdatedOn: Scalars['Float'];
+};
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  root?: Maybe<Scalars['String']>;
+  siteUpCheckerJobUpdated: SiteUpCheckerJob;
+};
+
+
+export type SubscriptionSiteUpCheckerJobUpdatedArgs = {
+  userId: Scalars['String'];
 };
 
 export type UpdateSiteUpCheckerJobInput = {
@@ -317,6 +348,19 @@ export type UserQuery = (
   & { user: (
     { __typename?: 'User' }
     & UserFragmentFragment
+  ) }
+);
+
+export type SiteUpCheckerJobUpdatedSubscriptionVariables = Exact<{
+  userId: Scalars['String'];
+}>;
+
+
+export type SiteUpCheckerJobUpdatedSubscription = (
+  { __typename?: 'Subscription' }
+  & { siteUpCheckerJobUpdated: (
+    { __typename?: 'SiteUpCheckerJob' }
+    & SiteUpCheckerJobFragmentFragment
   ) }
 );
 
@@ -793,3 +837,33 @@ export function useUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserQ
 export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
 export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
 export type UserQueryResult = Apollo.QueryResult<UserQuery, UserQueryVariables>;
+export const SiteUpCheckerJobUpdatedDocument = gql`
+    subscription siteUpCheckerJobUpdated($userId: String!) {
+  siteUpCheckerJobUpdated(userId: $userId) {
+    ...SiteUpCheckerJobFragment
+  }
+}
+    ${SiteUpCheckerJobFragmentFragmentDoc}`;
+
+/**
+ * __useSiteUpCheckerJobUpdatedSubscription__
+ *
+ * To run a query within a React component, call `useSiteUpCheckerJobUpdatedSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useSiteUpCheckerJobUpdatedSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSiteUpCheckerJobUpdatedSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useSiteUpCheckerJobUpdatedSubscription(baseOptions: Apollo.SubscriptionHookOptions<SiteUpCheckerJobUpdatedSubscription, SiteUpCheckerJobUpdatedSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<SiteUpCheckerJobUpdatedSubscription, SiteUpCheckerJobUpdatedSubscriptionVariables>(SiteUpCheckerJobUpdatedDocument, options);
+      }
+export type SiteUpCheckerJobUpdatedSubscriptionHookResult = ReturnType<typeof useSiteUpCheckerJobUpdatedSubscription>;
+export type SiteUpCheckerJobUpdatedSubscriptionResult = Apollo.SubscriptionResult<SiteUpCheckerJobUpdatedSubscription>;
