@@ -4,20 +4,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: "./src/index.tsx",
+  entry: path.resolve(__dirname, "./src/index.tsx"),
   resolve: {
     extensions: [".js", ".jsx", ".json", ".ts", ".tsx", '.less'],
   },
+  devtool: 'source-map',
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/'
+    path: path.resolve(__dirname, './dist')
   },
   devServer: {
     port: 8000,
     historyApiFallback: true,
     hot: true,
-    contentBase: './dist',
+    contentBase: path.resolve(__dirname, './dist'),
     watchOptions: {
       ignored: /node_modules/
     }

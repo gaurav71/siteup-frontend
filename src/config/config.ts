@@ -1,3 +1,3 @@
-export const config = Object.freeze({
-  backendBaseUrl: '/'
-})
+export const config = {
+  backendBaseUrl: 'http://localhost:9000/'
+}
