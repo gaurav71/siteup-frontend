@@ -4,51 +4,42 @@ import { useCreateSiteUpCheckerJobMutation, useUpdateSiteUpCheckerJobMutation } 
 import { cacheUpdator } from '../Apollo'
 import { useDashboardContext } from '../Dashboard'
 import { defaultCronOptions, getHumanReadableFromCron } from './util'
+import { Wrapper } from './styled'
 
 const { Option } = Select
 
-interface CreateUpdateJobProps {}
+interface CreateUpdateJobProps { }
 
 interface FormData {
   url: string;
   cron: string;
-  resetAfterDownCount: number;
   sendMailOnFailure: boolean;
+  resetAfterDownCount: number | null;
 }
 
-const initialValues: Partial<FormData> = {
-  cron: defaultCronOptions.EVERY_TEN_MINUTES.value,
-  sendMailOnFailure: false
+const initialValues: FormData = {
+  url: '',
+  cron: '',
+  sendMailOnFailure: false,
+  resetAfterDownCount: null
 }
-
-const INITIAL_CRON_VALUE = ''
 
 const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
   const [form] = Form.useForm()
   const [createMutation, { loading: createLoader, data: createData }] = useCreateSiteUpCheckerJobMutation()
   const [updateMutation, { loading: updateLoader, data: updateData }] = useUpdateSiteUpCheckerJobMutation()
   const { addEditJobModal, setAddEditJobModal, selectedJob } = useDashboardContext()
-  const [cronValue, setCronValue] = useState<string>(INITIAL_CRON_VALUE) 
-  const [customCron, setCustomCron] = useState({
-    key: '',
-    value: ''
-  })
+  const [cronValue, setCronValue] = useState<string>(initialValues.cron)
+  const [sendMailValue, setSendMailValue] = useState<boolean>(initialValues.sendMailOnFailure)
+  const [customCron, setCustomCron] = useState({ key: '', value: '' })
 
   useEffect(() => {
-    if (addEditJobModal === 'edit') {
+    if (addEditJobModal === 'edit' && selectedJob) {
       form.setFieldsValue(selectedJob)
-      setCronValue(selectedJob?.cron || '')
+      setCronValue(selectedJob.cron)
+      setSendMailValue(selectedJob.sendMailOnFailure)
     }
   }, [addEditJobModal])
-
-  useEffect(() => {
-    if (form) {
-      form.setFieldsValue({
-        ...form.getFieldsValue(),
-        cron: cronValue
-      })
-    }
-  }, [cronValue])
 
   useEffect(() => {
     if (createData) {
@@ -64,7 +55,22 @@ const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
     }
   }, [updateData])
 
-  const handleSubmit = async() => {
+  useEffect(() => {
+    if (form) {
+      const resetAfterDownCount = sendMailValue
+        ? form.getFieldValue('resetAfterDownCount')
+        : null
+
+      form.setFieldsValue({
+        ...form.getFieldsValue(),
+        cron: cronValue,
+        sendMailOnFailure: sendMailValue,
+        resetAfterDownCount
+      })
+    }
+  }, [cronValue, sendMailValue])
+
+  const handleSubmit = async () => {
     try {
       const formData: FormData = await form.validateFields()
 
@@ -82,21 +88,14 @@ const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
           }
         })
       }
-    } catch(error) { }
-  }
-
-  const resetForm = () => {
-    form.resetFields()
-    setCronValue(INITIAL_CRON_VALUE)
+    } catch (error) { }
   }
 
   const handleCancel = () => {
+    form.resetFields()
+    setCronValue(initialValues.cron)
+    setSendMailValue(initialValues.sendMailOnFailure)
     setAddEditJobModal('')
-    resetForm()
-  }
-
-  const handleCronSelectChange = (value: string) => {
-    setCronValue(value)
   }
 
   const handleCronInputChange = (e: any) => {
@@ -131,6 +130,7 @@ const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
       onOk={handleSubmit}
       confirmLoading={loader}
       onCancel={handleCancel}
+      width={350}
       footer={[
         <Button
           key="cancel"
@@ -148,76 +148,99 @@ const CreateUpdateJob: React.FC<CreateUpdateJobProps> = () => {
         </Button>
       ]}
     >
-      <Form
-        form={form}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 14 }}
-        layout="horizontal"
-        initialValues={initialValues}
-      >
-        <Form.Item
-          label="URL"
-          name="url"
-          rules={[{ required: true }]}
+      <Wrapper>
+        <Form
+          hideRequiredMark
+          form={form}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+          layout="vertical"
+          initialValues={initialValues}
         >
-          <Input
-            disabled={addEditJobModal === 'edit'}
-          />
-        </Form.Item>
-        <Form.Item label="Cron">
-          <Row gutter={2}>
-            <Col span={10}>
-              <Form.Item
-                noStyle
-                name="cron"
-                rules={[
-                  { required: true },
-                  {
-                    validator: async (_, value) => {
-                      if (value && !getHumanReadableFromCron(value)) {
-                        throw new Error('Invalid cron')
+          <Form.Item
+            label="URL"
+            name="url"
+            rules={[{
+              required: true,
+              message: 'URL is required'
+            }]}
+          >
+            <Input
+              disabled={addEditJobModal === 'edit'}
+            />
+          </Form.Item>
+          <Form.Item label="Cron">
+            <Row gutter={0}>
+              <Col span={10}>
+                <Form.Item
+                  noStyle
+                  name="cron"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'cron is required'
+                    },
+                    {
+                      validator: async (_, value) => {
+                        if (value && !getHumanReadableFromCron(value)) {
+                          throw new Error('Invalid cron')
+                        }
                       }
                     }
-                  }
-                ]}
-              >
-                <Input
-                  onChange={handleCronInputChange}
-                />
-              </Form.Item>
-            </Col>
-            <Col span={14}>
-              <Select
-                className="select-after"
-                onChange={handleCronSelectChange}
-                value={cronValue}
-              >
-                {Object.values(defaultCronOptions).map((data, index) => (
-                  <Option key={index} value={data.value}>{data.key}</Option>
-                ))}
-                {customCron.key && (
-                  <Option value={customCron.value}>{customCron.key}</Option>
-                )}
-              </Select>
-            </Col>
-          </Row>
-        </Form.Item>
-        <Form.Item
-          label="Reset After"
-          name="resetAfterDownCount"
-          rules={[{ required: true }]}
-        >
-          <InputNumber />
-        </Form.Item>
-        <Form.Item
-          label="Send Mail"
-          name="sendMailOnFailure"
-          valuePropName="checked"
-          rules={[{ required: true }]}
-        >
-          <Switch />
-        </Form.Item>
-      </Form>
+                  ]}
+                >
+                  <Input
+                    onChange={handleCronInputChange}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={14} >
+                <Select
+                  value={cronValue}
+                  onChange={(val) => setCronValue(val)}
+                >
+                  {Object.values(defaultCronOptions).map((data, index) => (
+                    <Option key={index} value={data.value} >
+                      {data.key}
+                    </Option>
+                  ))}
+                  {customCron.key && (
+                    <Option value={customCron.value} >
+                      {customCron.key}
+                    </Option>
+                  )}
+                </Select>
+              </Col>
+            </Row>
+          </Form.Item>
+          <Form.Item
+            label="Send mail when down"
+            name="sendMailOnFailure"
+            valuePropName="checked"
+            rules={[{
+              required: true
+            }]}
+          >
+            <Switch
+              onChange={(val) => setSendMailValue(val)}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Send mail after down count"
+            name="resetAfterDownCount"
+            hidden={!sendMailValue}
+            rules={[{
+              validator: async (_, value) => {
+                if (sendMailValue && typeof value !== 'number') {
+                  throw new Error('Reset After is required')
+                }
+              }
+            }]}
+          >
+            <InputNumber min={1} />
+          </Form.Item>
+        </Form>
+      </Wrapper>
     </Modal>
   )
 }

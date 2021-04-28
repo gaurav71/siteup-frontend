@@ -33,7 +33,7 @@ export enum CacheControlScope {
 export type CreateSiteUpCheckerJobInput = {
   url: Scalars['String'];
   cron: Scalars['String'];
-  resetAfterDownCount: Scalars['Float'];
+  resetAfterDownCount?: Maybe<Scalars['Float']>;
   sendMailOnFailure: Scalars['Boolean'];
 };
 
@@ -136,12 +136,12 @@ export type SiteUpCheckerJob = {
   url: Scalars['String'];
   cron: Scalars['String'];
   status: Scalars['String'];
-  resetAfterDownCount: Scalars['Float'];
+  resetAfterDownCount?: Maybe<Scalars['Float']>;
   totalDownCounter: Scalars['Float'];
   downCounterBeforeReset: Scalars['Float'];
   lastCheckedOn?: Maybe<Scalars['Float']>;
   siteUpOnLastChecked?: Maybe<Scalars['Boolean']>;
-  sendMailOnFailure?: Maybe<Scalars['Boolean']>;
+  sendMailOnFailure: Scalars['Boolean'];
   lastFailureOn?: Maybe<Scalars['Float']>;
   lastFailureEmailSentOn?: Maybe<Scalars['Float']>;
   createdOn: Scalars['Float'];
@@ -162,7 +162,7 @@ export type SubscriptionSiteUpCheckerJobUpdatedArgs = {
 export type UpdateSiteUpCheckerJobInput = {
   jobId: Scalars['String'];
   cron: Scalars['String'];
-  resetAfterDownCount: Scalars['Float'];
+  resetAfterDownCount?: Maybe<Scalars['Float']>;
   sendMailOnFailure: Scalars['Boolean'];
 };
 
@@ -213,7 +213,7 @@ export type CheckMultipleSitesStatusMutation = (
 export type CreateSiteUpCheckerJobMutationVariables = Exact<{
   url: Scalars['String'];
   cron: Scalars['String'];
-  resetAfterDownCount: Scalars['Float'];
+  resetAfterDownCount?: Maybe<Scalars['Float']>;
   sendMailOnFailure: Scalars['Boolean'];
 }>;
 
@@ -289,7 +289,7 @@ export type StartSiteUpCheckerJobMutation = (
 export type UpdateSiteUpCheckerJobMutationVariables = Exact<{
   jobId: Scalars['String'];
   cron: Scalars['String'];
-  resetAfterDownCount: Scalars['Float'];
+  resetAfterDownCount?: Maybe<Scalars['Float']>;
   sendMailOnFailure: Scalars['Boolean'];
 }>;
 
@@ -458,7 +458,7 @@ export type CheckMultipleSitesStatusMutationHookResult = ReturnType<typeof useCh
 export type CheckMultipleSitesStatusMutationResult = Apollo.MutationResult<CheckMultipleSitesStatusMutation>;
 export type CheckMultipleSitesStatusMutationOptions = Apollo.BaseMutationOptions<CheckMultipleSitesStatusMutation, CheckMultipleSitesStatusMutationVariables>;
 export const CreateSiteUpCheckerJobDocument = gql`
-    mutation createSiteUpCheckerJob($url: String!, $cron: String!, $resetAfterDownCount: Float!, $sendMailOnFailure: Boolean!) {
+    mutation createSiteUpCheckerJob($url: String!, $cron: String!, $resetAfterDownCount: Float, $sendMailOnFailure: Boolean!) {
   createSiteUpCheckerJob(
     input: {url: $url, cron: $cron, resetAfterDownCount: $resetAfterDownCount, sendMailOnFailure: $sendMailOnFailure}
   ) {
@@ -661,7 +661,7 @@ export type StartSiteUpCheckerJobMutationHookResult = ReturnType<typeof useStart
 export type StartSiteUpCheckerJobMutationResult = Apollo.MutationResult<StartSiteUpCheckerJobMutation>;
 export type StartSiteUpCheckerJobMutationOptions = Apollo.BaseMutationOptions<StartSiteUpCheckerJobMutation, StartSiteUpCheckerJobMutationVariables>;
 export const UpdateSiteUpCheckerJobDocument = gql`
-    mutation updateSiteUpCheckerJob($jobId: String!, $cron: String!, $resetAfterDownCount: Float!, $sendMailOnFailure: Boolean!) {
+    mutation updateSiteUpCheckerJob($jobId: String!, $cron: String!, $resetAfterDownCount: Float, $sendMailOnFailure: Boolean!) {
   updateSiteUpCheckerJob(
     input: {jobId: $jobId, cron: $cron, resetAfterDownCount: $resetAfterDownCount, sendMailOnFailure: $sendMailOnFailure}
   ) {

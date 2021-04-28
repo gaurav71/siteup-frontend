@@ -1,7 +1,7 @@
 mutation updateSiteUpCheckerJob(
   $jobId: String!
   $cron: String!
-  $resetAfterDownCount: Float!
+  $resetAfterDownCount: Float
   $sendMailOnFailure: Boolean!
 ){
   updateSiteUpCheckerJob(input: {
