@@ -1,7 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import {
   GetUserSiteUpCheckerJobsDocument,
-  LoginDocument,
   SiteUpCheckerJob,
   User,
   UserDocument,
