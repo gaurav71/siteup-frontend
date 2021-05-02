@@ -8,6 +8,10 @@ COPY tsconfig.json ./
 
 COPY webpack.config.js ./
 
+COPY .eslintrc.json ./
+
+COPY .eslintignore ./
+
 RUN npm install
 
 COPY src ./src
