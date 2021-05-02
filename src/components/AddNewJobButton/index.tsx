@@ -1,12 +1,12 @@
 import React from 'react'
 import { Button } from 'antd'
-import { useDashboardContext } from '../Dashboard'
+import { DashboardContextType, useDashboardContext } from '../Dashboard'
 import { AddNewButtonWrapper } from './styled'
 
 interface AddNewJobButtonProps {}
 
 const AddNewJobButton: React.FC<AddNewJobButtonProps> = () => {
-  const { setAddEditJobModal } = useDashboardContext()
+  const { setAddEditJobModal } = useDashboardContext() as DashboardContextType
 
   const handleClick = () => {
     setAddEditJobModal('add')
@@ -14,10 +14,7 @@ const AddNewJobButton: React.FC<AddNewJobButtonProps> = () => {
 
   return (
     <AddNewButtonWrapper>
-      <Button
-        type="primary"
-        size='middle'
-        onClick={handleClick}>
+      <Button type="primary" size="middle" onClick={handleClick}>
         Add New
       </Button>
     </AddNewButtonWrapper>

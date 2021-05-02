@@ -4,15 +4,19 @@ import { useRemoveSiteUpCheckerJobMutation } from '../../generated/graphql'
 import { cacheUpdator } from '../Apollo'
 
 interface DeleteJobProps {
-  jobId: string;
+  jobId: string
 }
 
 const DeleteJobButton: React.FC<DeleteJobProps> = ({ jobId }) => {
-  const [deleteJobMutation, { loading: deleteJobLoader, data: deleteJobData }] = useRemoveSiteUpCheckerJobMutation()
+  const [
+    deleteJobMutation,
+    { loading: deleteJobLoader, data: deleteJobData },
+  ] = useRemoveSiteUpCheckerJobMutation()
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation()
     deleteJobMutation({
-      variables: { jobId }
+      variables: { jobId },
     })
   }
 
@@ -20,17 +24,13 @@ const DeleteJobButton: React.FC<DeleteJobProps> = ({ jobId }) => {
     if (deleteJobData) {
       cacheUpdator.deleteSiteupJob(jobId)
     }
-  }, [deleteJobData])
-  
+  }, [jobId, deleteJobData])
+
   return (
-    <Button
-      danger
-      loading={deleteJobLoader}
-      onClick={handleClick}
-    >
-        Delete
+    <Button danger loading={deleteJobLoader} onClick={handleClick}>
+      Delete
     </Button>
   )
 }
 
-export default DeleteJobButton
+export default React.memo(DeleteJobButton)

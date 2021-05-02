@@ -4,15 +4,19 @@ import { useCheckMultipleSitesStatusMutation } from '../../generated/graphql'
 import { cacheUpdator } from '../Apollo'
 
 interface CheckStatusProps {
-  jobId: string;
+  jobId: string
 }
 
 const CheckStatusButton: React.FC<CheckStatusProps> = ({ jobId }) => {
-  const [checkStatusMutation, { loading: checkStatusLoader, data: checkStatusData }] = useCheckMultipleSitesStatusMutation()
+  const [
+    checkStatusMutation,
+    { loading: checkStatusLoader, data: checkStatusData },
+  ] = useCheckMultipleSitesStatusMutation()
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.stopPropagation()
     checkStatusMutation({
-      variables: { jobIds: [jobId] }
+      variables: { jobIds: [jobId] },
     })
   }
 
@@ -23,15 +27,12 @@ const CheckStatusButton: React.FC<CheckStatusProps> = ({ jobId }) => {
       })
     }
   }, [checkStatusData])
-  
+
   return (
-    <Button
-      loading={checkStatusLoader}
-      onClick={handleClick}
-    >
-        Check now
+    <Button loading={checkStatusLoader} onClick={handleClick}>
+      Check now
     </Button>
   )
 }
 
-export default CheckStatusButton
+export default React.memo(CheckStatusButton)

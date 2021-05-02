@@ -19,6 +19,7 @@ export type Scalars = {
 
 export type AuditLog = {
   __typename?: 'AuditLog';
+  _id: Scalars['String'];
   userId: Scalars['String'];
   jobId: Scalars['String'];
   status: Scalars['Boolean'];
@@ -44,6 +45,12 @@ export type CreateUserInput = {
   sendMailOnFailure: Scalars['Boolean'];
 };
 
+export type GetAuditLogsInput = {
+  jobId: Scalars['String'];
+  cursor?: Maybe<Scalars['Float']>;
+  limit: Scalars['Float'];
+};
+
 export type LoginUserInput = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -52,7 +59,10 @@ export type LoginUserInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   root?: Maybe<Scalars['String']>;
-  createUser: User;
+  createUser: Scalars['String'];
+  verifyUser: User;
+  updateUser: User;
+  resenedVericiationMail: Scalars['String'];
   logout: Scalars['String'];
   createSiteUpCheckerJob: SiteUpCheckerJob;
   updateSiteUpCheckerJob: SiteUpCheckerJob;
@@ -66,6 +76,21 @@ export type Mutation = {
 
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
+};
+
+
+export type MutationVerifyUserArgs = {
+  token: Scalars['String'];
+};
+
+
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInput;
+};
+
+
+export type MutationResenedVericiationMailArgs = {
+  email: Scalars['String'];
 };
 
 
@@ -105,8 +130,8 @@ export type Query = {
   login: User;
   getSiteUpCheckerJobById: SiteUpCheckerJob;
   getUserSiteUpCheckerJobs: Array<SiteUpCheckerJob>;
-  getSiteAuditLogs: AuditLog;
-  getSiteFailureAuditLogs: AuditLog;
+  getSiteAuditLogs: Array<AuditLog>;
+  getSiteFailureAuditLogs: Array<AuditLog>;
 };
 
 
@@ -121,12 +146,12 @@ export type QueryGetSiteUpCheckerJobByIdArgs = {
 
 
 export type QueryGetSiteAuditLogsArgs = {
-  jobId: Scalars['String'];
+  input: GetAuditLogsInput;
 };
 
 
 export type QueryGetSiteFailureAuditLogsArgs = {
-  jobId: Scalars['String'];
+  input: GetAuditLogsInput;
 };
 
 export type SiteUpCheckerJob = {
@@ -166,6 +191,10 @@ export type UpdateSiteUpCheckerJobInput = {
   sendMailOnFailure: Scalars['Boolean'];
 };
 
+export type UpdateUserInput = {
+  sendMailOnFailure: Scalars['Boolean'];
+};
+
 
 export type User = {
   __typename?: 'User';
@@ -175,6 +204,11 @@ export type User = {
   userType: Scalars['String'];
   sendMailOnFailure: Scalars['Boolean'];
 };
+
+export type AuditLogFragmentFragment = (
+  { __typename?: 'AuditLog' }
+  & Pick<AuditLog, '_id' | 'jobId' | 'userId' | 'status' | 'createdOn'>
+);
 
 export type SiteUpCheckerJobFragmentFragment = (
   { __typename?: 'SiteUpCheckerJob' }
@@ -236,10 +270,7 @@ export type CreateUserMutationVariables = Exact<{
 
 export type CreateUserMutation = (
   { __typename?: 'Mutation' }
-  & { createUser: (
-    { __typename?: 'User' }
-    & UserFragmentFragment
-  ) }
+  & Pick<Mutation, 'createUser'>
 );
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
@@ -300,6 +331,34 @@ export type UpdateSiteUpCheckerJobMutation = (
     { __typename?: 'SiteUpCheckerJob' }
     & SiteUpCheckerJobFragmentFragment
   ) }
+);
+
+export type UpdateUserMutationVariables = Exact<{
+  sendMailOnFailure: Scalars['Boolean'];
+}>;
+
+
+export type UpdateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { updateUser: (
+    { __typename?: 'User' }
+    & UserFragmentFragment
+  ) }
+);
+
+export type GetSiteAuditLogsQueryVariables = Exact<{
+  jobId: Scalars['String'];
+  cursor?: Maybe<Scalars['Float']>;
+  limit: Scalars['Float'];
+}>;
+
+
+export type GetSiteAuditLogsQuery = (
+  { __typename?: 'Query' }
+  & { getSiteAuditLogs: Array<(
+    { __typename?: 'AuditLog' }
+    & AuditLogFragmentFragment
+  )> }
 );
 
 export type GetSiteUpCheckerJobByIdQueryVariables = Exact<{
@@ -364,6 +423,15 @@ export type SiteUpCheckerJobUpdatedSubscription = (
   ) }
 );
 
+export const AuditLogFragmentFragmentDoc = gql`
+    fragment AuditLogFragment on AuditLog {
+  _id
+  jobId
+  userId
+  status
+  createdOn
+}
+    `;
 export const SiteUpCheckerJobFragmentFragmentDoc = gql`
     fragment SiteUpCheckerJobFragment on SiteUpCheckerJob {
   _id
@@ -499,11 +567,9 @@ export const CreateUserDocument = gql`
     mutation createUser($userName: String!, $email: String!, $password: String!, $sendMailOnFailure: Boolean!) {
   createUser(
     input: {userName: $userName, email: $email, password: $password, sendMailOnFailure: $sendMailOnFailure}
-  ) {
-    ...UserFragment
-  }
+  )
 }
-    ${UserFragmentFragmentDoc}`;
+    `;
 export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
 
 /**
@@ -698,6 +764,76 @@ export function useUpdateSiteUpCheckerJobMutation(baseOptions?: Apollo.MutationH
 export type UpdateSiteUpCheckerJobMutationHookResult = ReturnType<typeof useUpdateSiteUpCheckerJobMutation>;
 export type UpdateSiteUpCheckerJobMutationResult = Apollo.MutationResult<UpdateSiteUpCheckerJobMutation>;
 export type UpdateSiteUpCheckerJobMutationOptions = Apollo.BaseMutationOptions<UpdateSiteUpCheckerJobMutation, UpdateSiteUpCheckerJobMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation updateUser($sendMailOnFailure: Boolean!) {
+  updateUser(input: {sendMailOnFailure: $sendMailOnFailure}) {
+    ...UserFragment
+  }
+}
+    ${UserFragmentFragmentDoc}`;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      sendMailOnFailure: // value for 'sendMailOnFailure'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const GetSiteAuditLogsDocument = gql`
+    query getSiteAuditLogs($jobId: String!, $cursor: Float, $limit: Float!) {
+  getSiteAuditLogs(input: {jobId: $jobId, cursor: $cursor, limit: $limit}) {
+    ...AuditLogFragment
+  }
+}
+    ${AuditLogFragmentFragmentDoc}`;
+
+/**
+ * __useGetSiteAuditLogsQuery__
+ *
+ * To run a query within a React component, call `useGetSiteAuditLogsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSiteAuditLogsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSiteAuditLogsQuery({
+ *   variables: {
+ *      jobId: // value for 'jobId'
+ *      cursor: // value for 'cursor'
+ *      limit: // value for 'limit'
+ *   },
+ * });
+ */
+export function useGetSiteAuditLogsQuery(baseOptions: Apollo.QueryHookOptions<GetSiteAuditLogsQuery, GetSiteAuditLogsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetSiteAuditLogsQuery, GetSiteAuditLogsQueryVariables>(GetSiteAuditLogsDocument, options);
+      }
+export function useGetSiteAuditLogsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSiteAuditLogsQuery, GetSiteAuditLogsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetSiteAuditLogsQuery, GetSiteAuditLogsQueryVariables>(GetSiteAuditLogsDocument, options);
+        }
+export type GetSiteAuditLogsQueryHookResult = ReturnType<typeof useGetSiteAuditLogsQuery>;
+export type GetSiteAuditLogsLazyQueryHookResult = ReturnType<typeof useGetSiteAuditLogsLazyQuery>;
+export type GetSiteAuditLogsQueryResult = Apollo.QueryResult<GetSiteAuditLogsQuery, GetSiteAuditLogsQueryVariables>;
 export const GetSiteUpCheckerJobByIdDocument = gql`
     query getSiteUpCheckerJobById($id: String!) {
   getSiteUpCheckerJobById(id: $id) {

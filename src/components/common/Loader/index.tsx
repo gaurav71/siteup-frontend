@@ -1,17 +1,15 @@
 import React from 'react'
-import { Wrapper } from "./styled"
+import { Wrapper } from './styled'
 
 interface LoaderProps {
-  darkenBackground?: boolean;
+  darkenBackground?: boolean
 }
 
 const Loader: React.FC<LoaderProps> = (props) => {
   const { darkenBackground } = props
 
   return (
-    <Wrapper
-      darkenBackground={!!darkenBackground}
-    >
+    <Wrapper darkenBackground={!!darkenBackground}>
       <div className="lds-ring">
         <div></div>
         <div></div>

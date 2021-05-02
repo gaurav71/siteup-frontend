@@ -9,7 +9,5 @@ mutation createUser(
     email: $email
     password: $password
     sendMailOnFailure: $sendMailOnFailure
-  }) {
-    ...UserFragment
-  }
+  })
 }

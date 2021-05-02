@@ -1,7 +1,6 @@
-import React, { useContext, createContext, useState, useEffect } from "react";
-import { Maybe } from "graphql/jsutils/Maybe";
-import Loader from "../common/Loader";
-import { client } from "../Apollo";
+import React, { useContext, createContext, useState, useEffect } from 'react'
+import { Maybe } from 'graphql/jsutils/Maybe'
+import Loader from '../common/Loader'
 
 import {
   CreateUserMutationVariables,
@@ -10,32 +9,47 @@ import {
   useLoginLazyQuery,
   useLogoutMutation,
   User,
-  useUserQuery
-} from "../../generated/graphql";
+  useUserQuery,
+} from '../../generated/graphql'
+import { useApolloClient } from '@apollo/client'
 
-interface AuthContextType {
-  user: Maybe<User>;
-  login: (data: LoginQueryVariables) => void;
-  signup: (data: CreateUserMutationVariables) => void;
-  logout: () => void;
-  loginLoader: boolean;
-  signUpLoader: boolean;
-  checkUserLoader: boolean;
-  logoutLoader: boolean;
+export interface AuthContextType {
+  user: Maybe<User>
+  login: (data: LoginQueryVariables) => void
+  signup: (data: CreateUserMutationVariables) => void
+  logout: () => void
+  loginLoader: boolean
+  signUpLoader: boolean
+  checkUserLoader: boolean
+  logoutLoader: boolean
 }
 
-const authContext = createContext<AuthContextType>(null as any as AuthContextType)
+const authContext = createContext<AuthContextType | null>(null)
 
 const Provider = authContext.Provider
 
 const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<Maybe<User>>(null)
   const [firstCheck, setFirstCheck] = useState(false)
+  const client = useApolloClient()
 
-  const { loading: checkUserLoader, data: checkUserData, error: checkUserError } = useUserQuery()
-  const [loginQuery, { loading: loginLoader, data: loginData }] = useLoginLazyQuery()
-  const [createUserMutation, { loading: signUpLoader, data: signUpData }] = useCreateUserMutation()
-  const [logoutMutation, { loading: logoutLoader, data: logoutData }] = useLogoutMutation()
+  const {
+    loading: checkUserLoader,
+    data: checkUserData,
+    error: checkUserError,
+  } = useUserQuery()
+  const [
+    loginQuery,
+    { loading: loginLoader, data: loginData },
+  ] = useLoginLazyQuery()
+  const [
+    createUserMutation,
+    { loading: signUpLoader },
+  ] = useCreateUserMutation()
+  const [
+    logoutMutation,
+    { loading: logoutLoader, data: logoutData },
+  ] = useLogoutMutation()
 
   useEffect(() => {
     setUser(checkUserData && checkUserData.user)
@@ -44,10 +58,6 @@ const AuthProvider: React.FC = ({ children }) => {
   useEffect(() => {
     setUser(loginData && loginData.login)
   }, [loginData])
-
-  useEffect(() => {
-    setUser(signUpData && signUpData.createUser)
-  }, [signUpData])
 
   useEffect(() => {
     if (logoutData && logoutData.logout) {
@@ -61,16 +71,15 @@ const AuthProvider: React.FC = ({ children }) => {
     }
   }, [checkUserData, checkUserError])
 
-
   const login = (data: LoginQueryVariables) => {
     loginQuery({
-      variables: data
+      variables: data,
     })
   }
 
   const signup = (data: CreateUserMutationVariables) => {
     createUserMutation({
-      variables: data
+      variables: data,
     })
   }
 
@@ -87,24 +96,17 @@ const AuthProvider: React.FC = ({ children }) => {
     loginLoader,
     signUpLoader,
     checkUserLoader,
-    logoutLoader
+    logoutLoader,
   }
 
   if (!firstCheck || checkUserLoader || logoutLoader) {
-    return (
-      <Loader
-        darkenBackground
-      />
-    )
+    return <Loader darkenBackground />
   }
 
-  return (
-    <Provider value={contextValue}>
-      {children}
-    </Provider>
-  )
+  return <Provider value={contextValue}>{children}</Provider>
 }
 
-export const useAuthContext = () => useContext(authContext)
+export const useAuthContext = (): AuthContextType | null =>
+  useContext(authContext)
 
 export default AuthProvider

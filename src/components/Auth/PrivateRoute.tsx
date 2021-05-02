@@ -1,15 +1,15 @@
-import React from "react";
-import { Redirect, Route } from "react-router-dom";
-import { paths } from "../App";
-import { useAuthContext } from "./AuthProvider";
+import React from 'react'
+import { Redirect, Route } from 'react-router-dom'
+import { paths } from '../App'
+import { AuthContextType, useAuthContext } from './AuthProvider'
 
 interface PrivateRouteProps {
-  path: string;
-  exact?: boolean;
+  path: string
+  exact?: boolean
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, ...rest }) => {
-  const { user } = useAuthContext()
+  const { user } = useAuthContext() as AuthContextType
 
   return (
     <Route
@@ -19,12 +19,12 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, ...rest }) => {
           children
         ) : (
           <>
-          <Redirect
-            to={{
-              pathname: paths.LOGIN,
-              state: { from: location }
-            }}
-          />
+            <Redirect
+              to={{
+                pathname: paths.LOGIN,
+                state: { from: location },
+              }}
+            />
           </>
         )
       }

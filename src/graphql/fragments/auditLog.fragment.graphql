@@ -1,0 +1,7 @@
+fragment AuditLogFragment on AuditLog {
+  _id
+  jobId
+  userId
+  status
+  createdOn
+}

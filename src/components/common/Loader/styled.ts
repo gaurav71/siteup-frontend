@@ -1,28 +1,30 @@
 import styled, { css } from 'styled-components'
 
-export const Wrapper = styled.div<{ darkenBackground: boolean; }>`
+export const Wrapper = styled.div<{ darkenBackground: boolean }>`
   height: 100%;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  ${({ darkenBackground }) => darkenBackground && css`
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 200ms ease 0s, visibility 0s linear 0s;
-    background: rgba(0, 0, 0, 0.85);
-    position: fixed;
-    overflow: auto;
-    inset: 0px;
-    z-index: 10001;
-    min-height: 100%;
-    display: flex;
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    justify-content: center;
-  `}
+  ${({ darkenBackground }) =>
+    darkenBackground &&
+    css`
+      visibility: visible;
+      opacity: 1;
+      transition: opacity 200ms ease 0s, visibility 0s linear 0s;
+      background: rgba(0, 0, 0, 0.85);
+      position: fixed;
+      overflow: auto;
+      inset: 0px;
+      z-index: 10001;
+      min-height: 100%;
+      display: flex;
+      -webkit-box-align: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      justify-content: center;
+    `}
 
   .lds-ring {
     display: inline-block;

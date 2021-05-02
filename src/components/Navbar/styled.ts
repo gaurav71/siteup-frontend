@@ -9,10 +9,17 @@ export const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
 
+  h3 {
+    position: absolute;
+    left: 30px;
+    cursor: pointer;
+    top: 10px;
+  }
+
   .ant-dropdown-link {
     position: absolute;
-      right: 0;
-      margin-right: 40px;
+    right: 0;
+    margin-right: 40px;
   }
 
   .username-span {

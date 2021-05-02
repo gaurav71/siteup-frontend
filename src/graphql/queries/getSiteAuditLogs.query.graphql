@@ -1,0 +1,9 @@
+query getSiteAuditLogs($jobId: String!, $cursor: Float, $limit: Float!) {
+  getSiteAuditLogs(input: {
+    jobId: $jobId
+    cursor: $cursor
+    limit: $limit
+  }) {
+    ...AuditLogFragment
+  }
+}

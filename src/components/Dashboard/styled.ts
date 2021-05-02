@@ -5,6 +5,10 @@ export const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  .ant-divider-horizontal {
+    margin-bottom: 10px;
+  }
 `
 
 export const AddNewButtonWrapper = styled.div`

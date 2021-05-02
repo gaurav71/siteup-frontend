@@ -1,0 +1,5 @@
+mutation updateUser($sendMailOnFailure: Boolean!) {
+  updateUser(input: { sendMailOnFailure: $sendMailOnFailure }) {
+    ...UserFragment
+  }
+}

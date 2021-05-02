@@ -1,12 +1,18 @@
-import React from "react"
-import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom"
+import React from 'react'
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from 'react-router-dom'
 import ApolloProvider from './Apollo'
-import Login from "./Auth/login"
+import Login from './Auth/login'
 import styled from 'styled-components'
-import AuthProvider from "./Auth/AuthProvider"
-import PrivateRoute from "./Auth/PrivateRoute"
-import Dashboard from "./Dashboard"
-import Navbar from "./Navbar"
+import AuthProvider from './Auth/AuthProvider'
+import PrivateRoute from './Auth/PrivateRoute'
+import Dashboard from './Dashboard'
+import Navbar from './Navbar'
+import Profile from './Profile'
 
 const Wrapper = styled.div`
   height: 100%;
@@ -17,33 +23,21 @@ export const paths = Object.freeze({
   LOGIN: '/login',
   SIGNUP: '/signup',
   DASHBOARD: '/dashboard',
-  PROFILE: '/profile'
+  PROFILE: '/profile',
 })
 
 const routes = (
   <Switch>
-    <Route
-      exact
-      path={paths.LOGIN}
-    >
+    <Route exact path={paths.LOGIN}>
       <Login />
     </Route>
-    <PrivateRoute
-      exact
-      path={paths.DASHBOARD}
-    >
+    <PrivateRoute exact path={paths.DASHBOARD}>
       <Dashboard />
     </PrivateRoute>
-    <PrivateRoute
-      exact
-      path={paths.PROFILE}
-    >
-      <div>profile</div>
+    <PrivateRoute exact path={paths.PROFILE}>
+      <Profile />
     </PrivateRoute>
-    <Redirect
-      from={paths.HOME}
-      to={paths.DASHBOARD}
-    />
+    <Redirect from={paths.HOME} to={paths.DASHBOARD} />
   </Switch>
 )
 
