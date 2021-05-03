@@ -12,4 +12,3 @@ export const config = Object.freeze({
   backendBaseUrl: `https://${window.location.host}/`,
   webSocketUrl: `wss://${window.location.host}/ws/`,
 })
-
