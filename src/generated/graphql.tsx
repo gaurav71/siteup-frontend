@@ -42,7 +42,6 @@ export type CreateUserInput = {
   userName: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
-  sendMailOnFailure: Scalars['Boolean'];
 };
 
 export type GetAuditLogsInput = {
@@ -264,7 +263,6 @@ export type CreateUserMutationVariables = Exact<{
   userName: Scalars['String'];
   email: Scalars['String'];
   password: Scalars['String'];
-  sendMailOnFailure: Scalars['Boolean'];
 }>;
 
 
@@ -341,6 +339,19 @@ export type UpdateUserMutationVariables = Exact<{
 export type UpdateUserMutation = (
   { __typename?: 'Mutation' }
   & { updateUser: (
+    { __typename?: 'User' }
+    & UserFragmentFragment
+  ) }
+);
+
+export type VerifyUserMutationVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type VerifyUserMutation = (
+  { __typename?: 'Mutation' }
+  & { verifyUser: (
     { __typename?: 'User' }
     & UserFragmentFragment
   ) }
@@ -564,10 +575,8 @@ export type CreateSiteUpCheckerJobMutationHookResult = ReturnType<typeof useCrea
 export type CreateSiteUpCheckerJobMutationResult = Apollo.MutationResult<CreateSiteUpCheckerJobMutation>;
 export type CreateSiteUpCheckerJobMutationOptions = Apollo.BaseMutationOptions<CreateSiteUpCheckerJobMutation, CreateSiteUpCheckerJobMutationVariables>;
 export const CreateUserDocument = gql`
-    mutation createUser($userName: String!, $email: String!, $password: String!, $sendMailOnFailure: Boolean!) {
-  createUser(
-    input: {userName: $userName, email: $email, password: $password, sendMailOnFailure: $sendMailOnFailure}
-  )
+    mutation createUser($userName: String!, $email: String!, $password: String!) {
+  createUser(input: {userName: $userName, email: $email, password: $password})
 }
     `;
 export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
@@ -588,7 +597,6 @@ export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, C
  *      userName: // value for 'userName'
  *      email: // value for 'email'
  *      password: // value for 'password'
- *      sendMailOnFailure: // value for 'sendMailOnFailure'
  *   },
  * });
  */
@@ -797,6 +805,39 @@ export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const VerifyUserDocument = gql`
+    mutation verifyUser($token: String!) {
+  verifyUser(token: $token) {
+    ...UserFragment
+  }
+}
+    ${UserFragmentFragmentDoc}`;
+export type VerifyUserMutationFn = Apollo.MutationFunction<VerifyUserMutation, VerifyUserMutationVariables>;
+
+/**
+ * __useVerifyUserMutation__
+ *
+ * To run a mutation, you first call `useVerifyUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVerifyUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [verifyUserMutation, { data, loading, error }] = useVerifyUserMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useVerifyUserMutation(baseOptions?: Apollo.MutationHookOptions<VerifyUserMutation, VerifyUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<VerifyUserMutation, VerifyUserMutationVariables>(VerifyUserDocument, options);
+      }
+export type VerifyUserMutationHookResult = ReturnType<typeof useVerifyUserMutation>;
+export type VerifyUserMutationResult = Apollo.MutationResult<VerifyUserMutation>;
+export type VerifyUserMutationOptions = Apollo.BaseMutationOptions<VerifyUserMutation, VerifyUserMutationVariables>;
 export const GetSiteAuditLogsDocument = gql`
     query getSiteAuditLogs($jobId: String!, $cursor: Float, $limit: Float!) {
   getSiteAuditLogs(input: {jobId: $jobId, cursor: $cursor, limit: $limit}) {

@@ -1,4 +1,5 @@
 import React, { useContext, createContext, useState, useEffect } from 'react'
+import { useApolloClient } from '@apollo/client'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import Loader from '../common/Loader'
 
@@ -10,18 +11,23 @@ import {
   useLogoutMutation,
   User,
   useUserQuery,
+  useVerifyUserMutation
 } from '../../generated/graphql'
-import { useApolloClient } from '@apollo/client'
 
 export interface AuthContextType {
   user: Maybe<User>
   login: (data: LoginQueryVariables) => void
   signup: (data: CreateUserMutationVariables) => void
+  verify: (token: string) => void
   logout: () => void
   loginLoader: boolean
   signUpLoader: boolean
+  signUpSuccess: boolean
   checkUserLoader: boolean
   logoutLoader: boolean
+  verifyUserLoader: boolean
+  verifyUserSuccess: boolean
+  verifyUserError: boolean
 }
 
 const authContext = createContext<AuthContextType | null>(null)
@@ -38,14 +44,22 @@ const AuthProvider: React.FC = ({ children }) => {
     data: checkUserData,
     error: checkUserError,
   } = useUserQuery()
+
   const [
     loginQuery,
     { loading: loginLoader, data: loginData },
   ] = useLoginLazyQuery()
+
   const [
     createUserMutation,
-    { loading: signUpLoader },
+    { loading: signUpLoader, data: signUpData },
   ] = useCreateUserMutation()
+  
+  const [
+    verifyUserMutation,
+    { loading: verifyUserLoader, data: verifyUserData, error: verifyUserError },
+  ] = useVerifyUserMutation()
+  
   const [
     logoutMutation,
     { loading: logoutLoader, data: logoutData },
@@ -58,6 +72,10 @@ const AuthProvider: React.FC = ({ children }) => {
   useEffect(() => {
     setUser(loginData && loginData.login)
   }, [loginData])
+
+  useEffect(() => {
+    setUser(verifyUserData && verifyUserData.verifyUser)
+  }, [verifyUserData])
 
   useEffect(() => {
     if (logoutData && logoutData.logout) {
@@ -83,6 +101,12 @@ const AuthProvider: React.FC = ({ children }) => {
     })
   }
 
+  const verify = (token: string) => {
+    verifyUserMutation({
+      variables: { token }
+    })
+  }
+
   const logout = () => {
     logoutMutation()
     client.resetStore()
@@ -92,11 +116,16 @@ const AuthProvider: React.FC = ({ children }) => {
     user,
     login,
     signup,
+    verify,
     logout,
     loginLoader,
     signUpLoader,
     checkUserLoader,
     logoutLoader,
+    signUpSuccess: !!(signUpData),
+    verifyUserLoader,
+    verifyUserSuccess: !!(verifyUserData),
+    verifyUserError: !!(verifyUserError)
   }
 
   if (!firstCheck || checkUserLoader || logoutLoader) {

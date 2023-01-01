@@ -13,6 +13,8 @@ import PrivateRoute from './Auth/PrivateRoute'
 import Dashboard from './Dashboard'
 import Navbar from './Navbar'
 import Profile from './Profile'
+import SignUp from './Auth/signup'
+import VerifyUser from './Auth/VerifyUser'
 
 const Wrapper = styled.div`
   height: 100%;
@@ -24,12 +26,19 @@ export const paths = Object.freeze({
   SIGNUP: '/signup',
   DASHBOARD: '/dashboard',
   PROFILE: '/profile',
+  VERIFY_USER: '/verify-user'
 })
 
 const routes = (
   <Switch>
     <Route exact path={paths.LOGIN}>
       <Login />
+    </Route>
+    <Route exact path={paths.SIGNUP}>
+      <SignUp />
+    </Route>
+    <Route exact path={paths.VERIFY_USER}>
+      <VerifyUser />
     </Route>
     <PrivateRoute exact path={paths.DASHBOARD}>
       <Dashboard />

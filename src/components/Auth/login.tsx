@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react'
-import { Form, Input, Button, Checkbox } from 'antd'
+import { Form, Input, Button, Checkbox, Typography } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useHistory, useLocation } from 'react-router-dom'
 import { paths } from '../App'
 import { AuthContextType, useAuthContext } from './AuthProvider'
 import { Wrapper } from './styled'
+const { Link } = Typography
 
 interface FormData {
   email: string
@@ -61,9 +62,6 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
           <Form.Item name="remember" valuePropName="checked" noStyle>
             <Checkbox>Remember me</Checkbox>
           </Form.Item>
-          {/* <a className="login-form-forgot" href="">
-            Forgot password
-          </a> */}
         </Form.Item>
         <Form.Item>
           <Button
@@ -74,9 +72,10 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
           >
             Log in
           </Button>
-          {/* Or
-          <a href="">register now!</a> */}
         </Form.Item>
+        <Link onClick={() =>  history.push(paths.SIGNUP)}>
+          Click here to sign up
+        </Link>
       </Form>
     </Wrapper>
   )
