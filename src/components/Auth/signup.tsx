@@ -38,7 +38,7 @@ const SignUpForm: React.FC<LoginParamsType> = () => {
 
   return (
     <Wrapper>
-      <h2 className="header">Login</h2>
+      <h2 className="header">Sign Up</h2>
       <Form
         name="normal_login"
         className="login-form"
