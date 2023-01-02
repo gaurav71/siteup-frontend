@@ -15,6 +15,7 @@ import Navbar from './Navbar'
 import Profile from './Profile'
 import SignUp from './Auth/signup'
 import VerifyUser from './Auth/VerifyUser'
+import { NotificationProvider } from './common/Notification'
 
 const Wrapper = styled.div`
   height: 100%;
@@ -51,16 +52,18 @@ const routes = (
 )
 
 const App: React.FC = () => (
-  <ApolloProvider>
-    <AuthProvider>
-      <Router>
-        <Wrapper>
-          <Navbar />
-          {routes}
-        </Wrapper>
-      </Router>
-    </AuthProvider>
-  </ApolloProvider>
+  <NotificationProvider>
+    <ApolloProvider>
+      <AuthProvider>
+        <Router>
+          <Wrapper>
+            <Navbar />
+            {routes}
+          </Wrapper>
+        </Router>
+      </AuthProvider>
+    </ApolloProvider>
+  </NotificationProvider>
 )
 
 export default App

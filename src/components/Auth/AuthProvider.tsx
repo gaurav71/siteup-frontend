@@ -1,17 +1,21 @@
 import React, { useContext, createContext, useState, useEffect } from 'react'
-import { useApolloClient } from '@apollo/client'
+import { ApolloError, useApolloClient } from '@apollo/client'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import Loader from '../common/Loader'
 
 import {
+  CreateUserMutation,
   CreateUserMutationVariables,
+  LoginQuery,
   LoginQueryVariables,
+  LogoutMutation,
   useCreateUserMutation,
   useLoginLazyQuery,
   useLogoutMutation,
   User,
   useUserQuery,
-  useVerifyUserMutation
+  useVerifyUserMutation,
+  VerifyUserMutation
 } from '../../generated/graphql'
 
 export interface AuthContextType {
@@ -20,14 +24,19 @@ export interface AuthContextType {
   signup: (data: CreateUserMutationVariables) => void
   verify: (token: string) => void
   logout: () => void
-  loginLoader: boolean
-  signUpLoader: boolean
-  signUpSuccess: boolean
   checkUserLoader: boolean
-  logoutLoader: boolean
+  signUpLoader: boolean
+  signUpData: CreateUserMutation | null | undefined
+  signUpError: ApolloError | undefined
   verifyUserLoader: boolean
-  verifyUserSuccess: boolean
-  verifyUserError: boolean
+  verifyUserData: VerifyUserMutation | null | undefined
+  verifyUserError: ApolloError | undefined
+  loginLoader: boolean
+  loginData: LoginQuery | undefined
+  loginError: ApolloError | undefined
+  logoutLoader: boolean
+  logoutData: LogoutMutation | null | undefined
+  logoutError: ApolloError | undefined
 }
 
 const authContext = createContext<AuthContextType | null>(null)
@@ -47,12 +56,12 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const [
     loginQuery,
-    { loading: loginLoader, data: loginData },
+    { loading: loginLoader, data: loginData, error: loginError },
   ] = useLoginLazyQuery()
 
   const [
     createUserMutation,
-    { loading: signUpLoader, data: signUpData },
+    { loading: signUpLoader, data: signUpData, error: signUpError },
   ] = useCreateUserMutation()
   
   const [
@@ -62,7 +71,7 @@ const AuthProvider: React.FC = ({ children }) => {
   
   const [
     logoutMutation,
-    { loading: logoutLoader, data: logoutData },
+    { loading: logoutLoader, data: logoutData, error: logoutError },
   ] = useLogoutMutation()
 
   useEffect(() => {
@@ -118,14 +127,19 @@ const AuthProvider: React.FC = ({ children }) => {
     signup,
     verify,
     logout,
-    loginLoader,
-    signUpLoader,
     checkUserLoader,
-    logoutLoader,
-    signUpSuccess: !!(signUpData),
+    signUpLoader,
+    signUpData,
+    signUpError,
+    loginLoader,
+    loginData,
+    loginError,
     verifyUserLoader,
-    verifyUserSuccess: !!(verifyUserData),
-    verifyUserError: !!(verifyUserError)
+    verifyUserData,
+    verifyUserError,
+    logoutLoader,
+    logoutData,
+    logoutError
   }
 
   if (!firstCheck || checkUserLoader || logoutLoader) {

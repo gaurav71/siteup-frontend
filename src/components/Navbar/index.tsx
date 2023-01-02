@@ -1,10 +1,12 @@
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useContext, useEffect } from 'react'
 import { Menu, Dropdown } from 'antd'
 import { UserOutlined } from '@ant-design/icons'
 import { AuthContextType, useAuthContext } from '../Auth/AuthProvider'
 import { UserNameSpan, Wrapper } from './styled'
 import { useHistory } from 'react-router'
 import { paths } from '../App'
+import { useNotificationContext } from '../common/Notification'
+import { NotificationContextType } from '../common/Notification/NotificationProvider'
 
 const MENU_ITEMS = Object.freeze({
   PROFILE: 'profile',
@@ -20,8 +22,19 @@ const MenuItemStyle: CSSProperties = {
 }
 
 const Navbar: React.FC = () => {
-  const { user, logout } = useAuthContext() as AuthContextType
+  const { user, logout, logoutError } = useAuthContext() as AuthContextType
+  const { notification } = useNotificationContext() as NotificationContextType
   const history = useHistory()
+
+  useEffect(() => {
+    if (logoutError) {
+      notification.error({
+        message: 'Logout Error',
+        description: logoutError.message,
+        placement: 'topRight'
+      })
+    }
+  }, [logoutError])
 
   const onClick = ({ key }: any) => {
     switch (key) {

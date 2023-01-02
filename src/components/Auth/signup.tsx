@@ -5,6 +5,8 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { paths } from '../App'
 import { AuthContextType, useAuthContext } from './AuthProvider'
 import { Wrapper } from './styled'
+import { useNotificationContext } from '../common/Notification'
+import { NotificationContextType } from '../common/Notification/NotificationProvider'
 
 interface FormData {
   userName: string
@@ -17,7 +19,8 @@ interface LoginParamsType {}
 const SignUpForm: React.FC<LoginParamsType> = () => {
   const history = useHistory()
   const location = useLocation<{ from: string }>()
-  const { signup, user, signUpLoader, signUpSuccess } = useAuthContext() as AuthContextType
+  const { signup, user, signUpLoader, signUpData, signUpError } = useAuthContext() as AuthContextType
+  const { notification } = useNotificationContext() as NotificationContextType
   const { from } = location.state || { from: { pathname: paths.DASHBOARD } }
 
   useEffect(() => {
@@ -27,10 +30,25 @@ const SignUpForm: React.FC<LoginParamsType> = () => {
   }, [history, from, user])
 
   useEffect(() => {
-    if (signUpSuccess) {
-      alert('SignUp Successful')
+    if (signUpData && signUpData.createUser) {
+      notification.success({
+        message: 'Signup Successful',
+        placement: 'topRight'
+      })
+
+      history.push(paths.HOME)
     }
-  }, [signUpSuccess])
+  }, [signUpData])
+
+  useEffect(() => {
+    if (signUpError) {
+      notification.error({
+        message: 'Signup Error',
+        description: signUpError.message,
+        placement: 'topRight'
+      })
+    }
+  }, [signUpError])
 
   const onSubmit = (values: FormData) => {
     signup(values)

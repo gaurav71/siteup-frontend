@@ -2,6 +2,8 @@ import React, { useEffect } from "react"
 import { useHistory } from "react-router-dom"
 import { paths } from "../App"
 import Loader from "../common/Loader"
+import { useNotificationContext } from "../common/Notification"
+import { NotificationContextType } from "../common/Notification/NotificationProvider"
 import useSearchQuery from "../hooks/useSearchQuery"
 import { AuthContextType, useAuthContext } from "./AuthProvider"
 
@@ -11,9 +13,11 @@ const VerifyUser: React.FC<VerifyUserParmasType> = () => {
   const {
     verify,
     verifyUserLoader,
-    verifyUserSuccess,
+    verifyUserData,
     verifyUserError
   } = useAuthContext() as AuthContextType
+
+  const { notification } = useNotificationContext() as NotificationContextType
 
   const history = useHistory()
   const query = useSearchQuery()
@@ -29,10 +33,15 @@ const VerifyUser: React.FC<VerifyUserParmasType> = () => {
   }, [])
 
   useEffect(() => {
-    if (verifyUserSuccess || verifyUserError) {
+    if (verifyUserData || verifyUserError) {
+      if (verifyUserError) {
+        notification.error({ message: verifyUserError.message })
+      } else if (verifyUserData) {
+        notification.success({ message: 'Verification Successful.' })
+      }
       history.push(paths.HOME)
     }
-  }, [verifyUserSuccess, verifyUserError])
+  }, [verifyUserData, verifyUserError])
 
   return (
     <>

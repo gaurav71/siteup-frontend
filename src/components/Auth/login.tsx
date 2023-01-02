@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
-import { Form, Input, Button, Checkbox, Typography } from 'antd'
+import { Form, Input, Button, Checkbox, Typography, notification } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useHistory, useLocation } from 'react-router-dom'
 import { paths } from '../App'
 import { AuthContextType, useAuthContext } from './AuthProvider'
 import { Wrapper } from './styled'
+import { useNotificationContext } from '../common/Notification'
+import { NotificationContextType } from '../common/Notification/NotificationProvider'
 const { Link } = Typography
 
 interface FormData {
@@ -16,15 +18,30 @@ interface LoginParamsType {}
 
 const NormalLoginForm: React.FC<LoginParamsType> = () => {
   const history = useHistory()
+  const { notification } = useNotificationContext() as NotificationContextType
   const location = useLocation<{ from: string }>()
-  const { login, user, loginLoader } = useAuthContext() as AuthContextType
-  const { from } = location.state || { from: { pathname: paths.DASHBOARD } }
+  const { login, loginData, loginError, loginLoader, user } = useAuthContext() as AuthContextType
+  const { from } = location.state || { from: paths.DASHBOARD }
 
   useEffect(() => {
-    if (user && user._id) {
+    if (loginData && loginData.login && user) {
+      notification.success({
+        message: 'Login Successful',
+        placement: 'topRight'
+      })
       history.push(from)
     }
-  }, [history, from, user])
+  }, [history, from, loginData, user])
+
+  useEffect(() => {
+    if (loginError) {
+      notification.error({
+        message: 'Login Error',
+        description: loginError.message,
+        placement: 'topRight'
+      })
+    }
+  }, [loginError])
 
   const onSubmit = (values: FormData) => {
     login(values)
@@ -44,7 +61,7 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
           rules={[{ required: true, message: 'Please input your Email!' }]}
         >
           <Input
-            placeholder="Username"
+            placeholder="Email"
             prefix={<UserOutlined className="site-form-item-icon" />}
           />
         </Form.Item>
