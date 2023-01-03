@@ -17,10 +17,12 @@ import {
   useVerifyUserMutation,
   VerifyUserMutation
 } from '../../generated/graphql'
+import { config } from '../../config/config'
 
 export interface AuthContextType {
   user: Maybe<User>
   login: (data: LoginQueryVariables) => void
+  googleLogin: (data: Record<string, string>) => void
   signup: (data: CreateUserMutationVariables) => void
   verify: (token: string) => void
   logout: () => void
@@ -37,6 +39,7 @@ export interface AuthContextType {
   logoutLoader: boolean
   logoutData: LogoutMutation | null | undefined
   logoutError: ApolloError | undefined
+  googleLoginError: any
 }
 
 const authContext = createContext<AuthContextType | null>(null)
@@ -46,6 +49,7 @@ const Provider = authContext.Provider
 const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<Maybe<User>>(null)
   const [firstCheck, setFirstCheck] = useState(false)
+  const [googleLoginError, setGoogleLoginError] = useState<any>(null)
   const client = useApolloClient()
 
   const {
@@ -104,6 +108,20 @@ const AuthProvider: React.FC = ({ children }) => {
     })
   }
 
+  const googleLogin = (data: Record<string, string>) => {
+    fetch(`${config.backendBaseUrl}oauth/google`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then(setUser)
+      .catch(setGoogleLoginError)
+  }
+
   const signup = (data: CreateUserMutationVariables) => {
     createUserMutation({
       variables: data,
@@ -124,6 +142,7 @@ const AuthProvider: React.FC = ({ children }) => {
   const contextValue: AuthContextType = {
     user,
     login,
+    googleLogin,
     signup,
     verify,
     logout,
@@ -139,7 +158,8 @@ const AuthProvider: React.FC = ({ children }) => {
     verifyUserError,
     logoutLoader,
     logoutData,
-    logoutError
+    logoutError,
+    googleLoginError
   }
 
   if (!firstCheck || checkUserLoader || logoutLoader) {

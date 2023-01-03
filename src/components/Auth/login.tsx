@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react'
-import { Form, Input, Button, Checkbox, Typography, notification } from 'antd'
+import { Form, Input, Button, Checkbox, Typography } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useHistory, useLocation } from 'react-router-dom'
 import { paths } from '../App'
@@ -25,8 +25,16 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
   const googleButton = useRef(null);
   const { notification } = useNotificationContext() as NotificationContextType
   const location = useLocation<{ from: string }>()
-  const { login, loginData, loginError, loginLoader, user } = useAuthContext() as AuthContextType
   const { from } = location.state || { from: paths.DASHBOARD }
+
+  const {
+    login,
+    googleLogin,
+    loginError,
+    loginLoader,
+    user,
+    googleLoginError
+  } = useAuthContext() as AuthContextType
 
   useEffect(() => {
     loadScript(config.googleGSIClientScriptUrl)
@@ -44,14 +52,14 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
   }, [])
 
   useEffect(() => {
-    if (loginData && loginData.login && user) {
+    if (user) {
       notification.success({
-        message: 'Login Successful',
+        message: 'Welcome',
         placement: 'topRight'
       })
       history.push(from)
     }
-  }, [history, from, loginData, user])
+  }, [history, from, user])
 
   useEffect(() => {
     if (loginError) {
@@ -63,21 +71,22 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
     }
   }, [loginError])
 
+  useEffect(() => {
+    if (googleLoginError) {
+      notification.error({
+        message: 'Login Error',
+        description: googleLoginError.message || '',
+        placement: 'topRight'
+      })
+    }
+  }, [googleLoginError])
+
   const onSubmit = (values: FormData) => {
     login(values)
   }
 
-  const handleGoogleSignInCallback = (response: any) => {
-    fetch(`${config.backendBaseUrl}oauth/google`, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify(response),
-    })
-      .then((res) => res.json())
-      .then(console.log)
-      .catch(console.error)
+  const handleGoogleSignInCallback = (response: Record<string, string>) => {
+    googleLogin(response)
   }
 
   return (
