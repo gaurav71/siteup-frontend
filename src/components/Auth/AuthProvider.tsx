@@ -53,15 +53,13 @@ const AuthProvider: React.FC = ({ children }) => {
   const client = useApolloClient()
 
   const {
-    loading: checkUserLoader,
-    data: checkUserData,
-    error: checkUserError,
-  } = useUserQuery()
+    loading: checkUserLoader, data: checkUserData, error: checkUserError
+  } = useUserQuery({ nextFetchPolicy: 'standby' })
 
   const [
     loginQuery,
     { loading: loginLoader, data: loginData, error: loginError },
-  ] = useLoginLazyQuery()
+  ] = useLoginLazyQuery({ nextFetchPolicy: 'standby' })
 
   const [
     createUserMutation,
