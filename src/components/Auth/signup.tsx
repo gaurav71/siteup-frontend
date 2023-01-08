@@ -7,6 +7,7 @@ import { AuthContextType, useAuthContext } from './AuthProvider'
 import { Wrapper } from './styled'
 import { useNotificationContext } from '../common/Notification'
 import { NotificationContextType } from '../common/Notification/NotificationProvider'
+import { cacheUpdator, client } from '../Apollo'
 
 interface FormData {
   userName: string
@@ -19,7 +20,7 @@ interface LoginParamsType {}
 const SignUpForm: React.FC<LoginParamsType> = () => {
   const history = useHistory()
   const location = useLocation<{ from: string }>()
-  const { signup, user, signUpLoader, signUpData, signUpError } = useAuthContext() as AuthContextType
+  const { signup, user, signUpLoader, signUpData, signUpError, resetCreateUser } = useAuthContext() as AuthContextType
   const { notification } = useNotificationContext() as NotificationContextType
   const { from } = location.state || { from: { pathname: paths.DASHBOARD } }
 
@@ -36,6 +37,7 @@ const SignUpForm: React.FC<LoginParamsType> = () => {
         placement: 'topRight'
       })
 
+      resetCreateUser()
       history.push(paths.HOME)
     }
   }, [signUpData])

@@ -26,6 +26,7 @@ export interface AuthContextType {
   signup: (data: CreateUserMutationVariables) => void
   verify: (token: string) => void
   logout: () => void
+  resetCreateUser: () => void
   checkUserLoader: boolean
   signUpLoader: boolean
   signUpData: CreateUserMutation | null | undefined
@@ -54,16 +55,16 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const {
     loading: checkUserLoader, data: checkUserData, error: checkUserError
-  } = useUserQuery({ nextFetchPolicy: 'standby' })
+  } = useUserQuery({ nextFetchPolicy: 'standby', fetchPolicy: 'no-cache' })
 
   const [
     loginQuery,
     { loading: loginLoader, data: loginData, error: loginError },
-  ] = useLoginLazyQuery({ nextFetchPolicy: 'standby' })
+  ] = useLoginLazyQuery({ nextFetchPolicy: 'standby', fetchPolicy: 'no-cache' })
 
   const [
     createUserMutation,
-    { loading: signUpLoader, data: signUpData, error: signUpError },
+    { loading: signUpLoader, data: signUpData, error: signUpError, reset: resetCreateUser },
   ] = useCreateUserMutation()
   
   const [
@@ -144,6 +145,7 @@ const AuthProvider: React.FC = ({ children }) => {
     signup,
     verify,
     logout,
+    resetCreateUser,
     checkUserLoader,
     signUpLoader,
     signUpData,
