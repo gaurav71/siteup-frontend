@@ -40,7 +40,6 @@ export interface AuthContextType {
   logoutLoader: boolean
   logoutData: LogoutMutation | null | undefined
   logoutError: ApolloError | undefined
-  googleLoginError: any
 }
 
 const authContext = createContext<AuthContextType | null>(null)
@@ -50,7 +49,7 @@ const Provider = authContext.Provider
 const AuthProvider: React.FC = ({ children }) => {
   const [user, setUser] = useState<Maybe<User>>(null)
   const [firstCheck, setFirstCheck] = useState(false)
-  const [googleLoginError, setGoogleLoginError] = useState<any>(null)
+  const [loginError, setLoginError] = useState<any>(null)
   const client = useApolloClient()
 
   const {
@@ -59,7 +58,7 @@ const AuthProvider: React.FC = ({ children }) => {
 
   const [
     loginQuery,
-    { loading: loginLoader, data: loginData, error: loginError },
+    { loading: loginLoader, data: loginData, error: loginApiError },
   ] = useLoginLazyQuery({ nextFetchPolicy: 'standby', fetchPolicy: 'no-cache' })
 
   const [
@@ -84,6 +83,10 @@ const AuthProvider: React.FC = ({ children }) => {
   useEffect(() => {
     setUser(loginData && loginData.login)
   }, [loginData])
+
+  useEffect(() => {
+    setLoginError(loginApiError)
+  }, [loginApiError])
 
   useEffect(() => {
     setUser(verifyUserData && verifyUserData.verifyUser)
@@ -118,7 +121,7 @@ const AuthProvider: React.FC = ({ children }) => {
     })
       .then((res) => res.json())
       .then(setUser)
-      .catch(setGoogleLoginError)
+      .catch(setLoginError)
   }
 
   const signup = (data: CreateUserMutationVariables) => {
@@ -134,8 +137,10 @@ const AuthProvider: React.FC = ({ children }) => {
   }
 
   const logout = () => {
+    client.clearStore()
     logoutMutation()
-    client.resetStore()
+    setUser(null)
+    setLoginError(null)
   }
 
   const contextValue: AuthContextType = {
@@ -158,8 +163,7 @@ const AuthProvider: React.FC = ({ children }) => {
     verifyUserError,
     logoutLoader,
     logoutData,
-    logoutError,
-    googleLoginError
+    logoutError
   }
 
   if (!firstCheck || checkUserLoader || logoutLoader) {

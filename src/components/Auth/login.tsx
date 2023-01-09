@@ -32,8 +32,7 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
     googleLogin,
     loginError,
     loginLoader,
-    user,
-    googleLoginError
+    user
   } = useAuthContext() as AuthContextType
 
   useEffect(() => {
@@ -57,6 +56,7 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
         message: 'Welcome',
         placement: 'topRight'
       })
+
       history.push(from)
     }
   }, [history, from, user])
@@ -65,21 +65,11 @@ const NormalLoginForm: React.FC<LoginParamsType> = () => {
     if (loginError) {
       notification.error({
         message: 'Login Error',
-        description: loginError.message,
+        description: loginError.message || '',
         placement: 'topRight'
       })
     }
   }, [loginError])
-
-  useEffect(() => {
-    if (googleLoginError) {
-      notification.error({
-        message: 'Login Error',
-        description: googleLoginError.message || '',
-        placement: 'topRight'
-      })
-    }
-  }, [googleLoginError])
 
   const onSubmit = (values: FormData) => {
     login(values)
